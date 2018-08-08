@@ -1,3 +1,3 @@
 FROM alpine
-WORKDIR /home
-RUN ["mkdir","/home/mydir"]
+ARG DIRNAME=defaultdir
+RUN ["mkdir","/home/$DIRNAME"]
