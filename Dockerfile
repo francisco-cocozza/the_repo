@@ -1,3 +1,3 @@
 FROM alpine
 WORKDIR /home
-CMD ["mkdir","/home/mydir"]
+RUN ["mkdir","/home/mydir"]
