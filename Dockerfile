@@ -1,3 +1,3 @@
 FROM alpine
 WORKDIR /home
-CMD ["touch","/home/myfile.txt"]
+CMD ["mkdir","/home/mydir"]
