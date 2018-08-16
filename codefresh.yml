@@ -1,0 +1,54 @@
+version: '1.0'
+steps:
+
+  alignManifests:
+    title: Align K8s manifests
+    image: mikefarah/yq
+    commands:
+      - yq w -d'*' -i tiller-resources.yaml metadata.namespace ${{NAMESPACE}}
+      - yq w -d1 -i tiller-resources.yaml subjects[0].namespace ${{NAMESPACE}}  # Namespace for the subject in RoleBinding (document1)
+      - cat tiller-resources.yaml
+      
+  installTiller:
+    title: Install Tiller
+    image: codefresh/cfstep-helm:2.9.1
+    environment:
+      - ACTION=auth
+    commands:
+      - kubectl config use-context ${{KUBE_CONTEXT}}
+      - kubectl create serviceaccount tiller --namespace ${{NAMESPACE}} || true
+      - kubectl apply -f tiller-resources.yaml
+      - helm init --service-account tiller --tiller-namespace ${{NAMESPACE}}
+      
+  listReleases:  # just for debugging purposes
+    title: List Helm releases
+    image: codefresh/cfstep-helm:2.9.1
+    environment:
+      - ACTION=auth
+    commands:
+      - kubectl config use-context ${{KUBE_CONTEXT}}
+      - sleep 5
+      - helm list --tiller-namespace ${{NAMESPACE}} || true
+      
+  installChart:
+    title: Install Helm Chart
+    image: codefresh/cfstep-helm:2.9.1
+    environment:
+      - ACTION=auth
+    commands:
+      - kubectl config use-context ${{KUBE_CONTEXT}}
+      - helm repo update
+      - helm install stable/nginx-ldapauth-proxy --set service.type=LoadBalancer --namespace ${{NAMESPACE}} --tiller-namespace ${{NAMESPACE}} 
+      #- helm install stable/nginx-ldapauth-proxy --namespace ${{NAMESPACE}} --tiller-namespace ${{NAMESPACE}} 
+      
+  uninstallingTiller:
+    title: Uninstall Tiller
+    image: codefresh/cfstep-helm:2.9.1
+    environment:
+      - ACTION=auth
+    commands:
+      - kubectl config use-context ${{KUBE_CONTEXT}}
+      - helm reset --force --tiller-namespace ${{NAMESPACE}} 
+      - kubectl delete rolebinding tiller-binding --namespace ${{NAMESPACE}}
+      - kubectl delete role tiller-role --namespace ${{NAMESPACE}}
+      - kubectl delete serviceaccount tiller --namespace ${{NAMESPACE}}
