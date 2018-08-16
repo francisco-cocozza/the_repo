@@ -2,7 +2,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: tiller-role
-  namespace: {{NAMESPACE}}
+  namespace: "{{NAMESPACE}}"
 rules:
 - apiGroups: ["", "extensions", "apps"]
   resources: ["*"]
@@ -12,11 +12,11 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: tiller-binding
-  namespace: {{NAMESPACE}}
+  namespace: "{{NAMESPACE}}"
 subjects:
 - kind: ServiceAccount
   name: tiller
-  namespace: {{NAMESPACE}}
+  namespace: "{{NAMESPACE}}"
 roleRef:
   kind: Role
   name: tiller-role
