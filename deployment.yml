@@ -20,5 +20,8 @@ spec:
         ports:
         - containerPort: 80
           protocol: TCP
+        env:
+          - name: VAR
+            value: '${{URL}}'
         imagePullPolicy: Always
 restartPolicy: Always
