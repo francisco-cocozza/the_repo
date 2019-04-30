@@ -5,5 +5,5 @@ RUN printenv
 RUN echo "=========="
 ARG MAIN_IMAGE
 RUN echo $MAIN_IMAGE
-RUN echo "${}"
+RUN echo "{}"
 RUN echo ${MAIN_IMAGE}
